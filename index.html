@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Utilisateurs</title>
+</head>
+<body>
+    <h1>Ajouter un utilisateur</h1>
+    <input type="text" id="nom" placeholder="Nom">
+    <button onclick="ajouterUtilisateur()">Ajouter</button>
+
+    <h2>Liste des utilisateurs</h2>
+    <ul id="liste"></ul>
+
+    <script>
+        const API = "http://127.0.0.1:5000/api/utilisateurs";
+
+        async function ajouterUtilisateur() {
+            const nom = document.getElementById("nom").value;
+            if (!nom) return alert("Le nom est requis !");
+
+            const res = await fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nom })
+            });
+
+            if (res.ok) {
+                document.getElementById("nom").value = "";
+                afficherUtilisateurs();
+            } else {
+                const err = await res.json();
+                alert(err.error);
+            }
+        }
+
+        async function afficherUtilisateurs() {
+            const res = await fetch(API);
+            if (!res.ok) return;
+
+            const data = await res.json();
+            const ul = document.getElementById("liste");
+            ul.innerHTML = "";
+            data.forEach(u => {
+                const li = document.createElement("li");
+                li.textContent = `${u.id} - ${u.nom}`;
+                ul.appendChild(li);
+            });
+        }
+
+        // Si GET n'existe pas encore sur Flask, tu peux juste afficher les nouveaux users dans JS
+    </script>
+</body>
+</html>
