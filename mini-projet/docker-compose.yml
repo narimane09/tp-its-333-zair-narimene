@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "5000:5000"
+
+  person-service:
+    build: ./person-service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - auth-service
+
+  health-service:
+    build: ./health-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - person-service

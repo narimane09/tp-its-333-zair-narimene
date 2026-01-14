@@ -1,0 +1,31 @@
+services:
+  person-service:
+    build: ./person-service
+    ports:
+      - "5001:5001"
+    environment:
+      - JWT_SECRET_KEY=my-secret-key-change-in-production
+      - FLASK_ENV=development
+    networks:
+      - microservices-network
+    volumes:
+      - ./person-service:/app
+
+  health-service:
+    build: ./health-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - person-service
+    environment:
+      - JWT_SECRET_KEY=my-secret-key-change-in-production
+      - PERSON_SERVICE_URL=http://person-service:5001
+      - FLASK_ENV=development
+    networks:
+      - microservices-network
+    volumes:
+      - ./health-service:/app
+
+networks:
+  microservices-network:
+    driver: bridge
